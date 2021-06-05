@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_newsv1/Layout/Home/Home_screen.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/social-sign-in/social-sign-In-screen.dart';
 import 'package:flutter_app_newsv1/Shared/Networks/local/cache_helper.dart';
 import 'package:flutter_app_newsv1/Shared/Networks/remote/dio_helper.dart';
@@ -79,7 +80,7 @@ class MyApp extends StatelessWidget {
     ),
     home: Directionality(
     textDirection: TextDirection.ltr,
-    child:   SocialSignInScreen(),//HomeScreen()//: SignInScreen()
+    child:   HomeScreen(),//SocialSignInScreen()//: SignInScreen()
     ),
     );
   }

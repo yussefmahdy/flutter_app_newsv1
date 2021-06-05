@@ -18,6 +18,7 @@ import 'package:flutter_app_newsv1/models/shop_app/user-login-data.dart';
 import 'package:flutter_app_newsv1/models/shop_app/user_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:http/http.dart' as http;
 
 class ShopCubit extends Cubit<ShopStates> {
   ShopCubit() : super(ShopInitialState());

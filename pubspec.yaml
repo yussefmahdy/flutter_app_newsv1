@@ -33,10 +33,12 @@ dependencies:
   webview_flutter: ^2.0.4
   carousel_slider: ^2.3.1
   flutter_phoenix: ^1.0.0
+  http:
   # fire base
   firebase_core: ^1.2.0
   firebase_auth: ^1.2.0
   google_sign_in: ^5.0.4
+
 
 
 
