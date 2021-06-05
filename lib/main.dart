@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
     ),
     home: Directionality(
     textDirection: TextDirection.ltr,
-    child:   HomeScreen(),//SocialSignInScreen()//: SignInScreen()
+    child:   SocialSignInScreen(),//HomeScreen()//: SignInScreen()
     ),
     );
   }

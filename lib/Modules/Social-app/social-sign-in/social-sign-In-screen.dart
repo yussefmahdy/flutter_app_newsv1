@@ -10,6 +10,8 @@ class SocialSignInScreen extends StatelessWidget
 {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  var phoneController = TextEditingController();
+  var codeController = TextEditingController();
   var globalKey = GlobalKey<FormState>();
   String validateText= "Please write a valid data";
   dynamic color = Colors.grey;
@@ -83,7 +85,7 @@ class SocialSignInScreen extends StatelessWidget
                               ),
 
                               SizedBox(
-                                height: 20.0,
+                                height: 10.0,
                               ),
 
                               defaultFormField(
@@ -94,6 +96,30 @@ class SocialSignInScreen extends StatelessWidget
                                 icon: Icons.lock,
                                 onChange: (value) {},
                                 obscureText: true,
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              if(state is! CodeSentSuccessState)
+                              defaultFormField(
+                                  controller: phoneController,
+                                  type: TextInputType.phone,
+                                  label: "Phone number",
+                                  validate: "Phone must not be empty",
+                                  icon: Icons.phone,
+                                  onChange: (value) {}
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              if(state is CodeSentSuccessState)
+                              defaultFormField(
+                                  controller: codeController,
+                                  type: TextInputType.number,
+                                  label: "Code",
+                                  validate: "code must not be empty",
+                                  icon: Icons.code,
+                                  onChange: (value) {}
                               ),
 
                               SizedBox(
@@ -117,7 +143,39 @@ class SocialSignInScreen extends StatelessWidget
                               SizedBox(
                                 height: 20.0,
                               ),
+                              if(state is! CodeSentSuccessState)
+                              defaultButton(
+                                whenPress: () {
+                                  SocialCubit.get(context).PhoneAuth(
+                                    mobile: phoneController.text,
+                                  );
+                                },
+                                text: "Send Code",
+                                upperCase: true,
+                                fullWidth: true,
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              if(state is CodeSentSuccessState)
+                              defaultButton(
+                                whenPress: () {
+                                  SocialCubit.get(context).PhoneAuth(
+                                    code: codeController.text,
+                                  );
+                                },
+                                text: "Continue",
+                                upperCase: true,
+                                fullWidth: true,
+                              ),
+                              if(state is CodeSentSuccessState)
+                              SizedBox(
+                                height: 20.0,
+                              ),
+
+
                               if(state is! SocialSignInLoadingState)
+
                                 defaultButton(
                                   whenPress: () {
                                     if(globalKey.currentState.validate())
@@ -153,6 +211,15 @@ class SocialSignInScreen extends StatelessWidget
                                       .catchError((error){});
                                 },
                                 text: "Continue with Google",
+                                upperCase: true,
+                                fullWidth: true,
+                              ),
+                              if(false)
+                              defaultButton(
+                                whenPress: () {
+                                  SocialCubit.get(context).PhoneAuth();
+                                },
+                                text: "Continue with Phone number",
                                 upperCase: true,
                                 fullWidth: true,
                               ),

@@ -22,3 +22,5 @@ class SocialRegisterLoadingState extends SocialStates {}
 class SocialRegisterSuccessState extends SocialStates {}
 
 class SocialRegisterErrorState extends SocialStates {}
+
+class CodeSentSuccessState extends SocialStates {}

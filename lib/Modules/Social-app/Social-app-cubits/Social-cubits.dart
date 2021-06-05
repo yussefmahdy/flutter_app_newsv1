@@ -150,6 +150,37 @@ class SocialCubit extends Cubit<SocialStates> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  void PhoneAuth({String code,String mobile})async
+  {
+    var auth= FirebaseAuth.instance;
+    await auth.verifyPhoneNumber(
+      phoneNumber: '+966$mobile',
+      verificationCompleted: (PhoneAuthCredential credential) async{
+        await auth.signInWithCredential(credential).then((value) {
+          print(value.user.uid);
+        });
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        if (e.code == 'invalid-phone-number') {
+          print('The provided phone number is not valid.');
+        }
+      },
+      codeSent: (String verificationId, int resendToken) async {
+        emit(CodeSentSuccessState());
+        // Update the UI - wait for the user to enter the SMS code
+        String smsCode = code;
+
+        // Create a PhoneAuthCredential with the code
+        PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+
+        // Sign the user in (or link) with the credential
+        await auth.signInWithCredential(credential);
+      },
+      timeout: const Duration(seconds: 60),
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
 
 
 
