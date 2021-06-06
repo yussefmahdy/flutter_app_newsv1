@@ -154,7 +154,7 @@ class SocialCubit extends Cubit<SocialStates> {
   {
     var auth= FirebaseAuth.instance;
     await auth.verifyPhoneNumber(
-      phoneNumber: '+966$mobile',
+      phoneNumber: mobile,
       verificationCompleted: (PhoneAuthCredential credential) async{
         await auth.signInWithCredential(credential).then((value) {
           print(value.user.uid);
@@ -168,7 +168,7 @@ class SocialCubit extends Cubit<SocialStates> {
       codeSent: (String verificationId, int resendToken) async {
         emit(CodeSentSuccessState());
         // Update the UI - wait for the user to enter the SMS code
-        String smsCode = code;
+        String smsCode = "hi dad i am talking to you on firebase";
 
         // Create a PhoneAuthCredential with the code
         PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
