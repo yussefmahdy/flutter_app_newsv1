@@ -1,6 +1,8 @@
 
 import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_newsv1/Layout/Home/Home_screen.dart';
@@ -31,9 +33,18 @@ void main() async
     isLoggedBefore = true;
   else
     isLoggedBefore = false;
-  
-  
 
+
+  Widget start;
+
+
+  final currentUser = FirebaseAuth.instance.currentUser;
+
+  if(currentUser != null){
+    print("Current User Success");
+  } else{
+    print("Current User Is Null");
+  }
 
 
   // run my app method
