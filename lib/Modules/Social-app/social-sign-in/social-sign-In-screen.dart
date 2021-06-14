@@ -1,9 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/Social-app-cubits/Social-cubits.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/Social-app-cubits/Social-states.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/social-regester/social-regester-screen.dart';
 import 'package:flutter_app_newsv1/Shared/Components/Components.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class SocialSignInScreen extends StatelessWidget
@@ -17,7 +19,7 @@ class SocialSignInScreen extends StatelessWidget
   dynamic color = Colors.grey;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     return BlocProvider(
       create: (BuildContext context) => SocialCubit(),
       child: BlocConsumer<SocialCubit, SocialStates>(
@@ -153,6 +155,9 @@ class SocialSignInScreen extends StatelessWidget
                                 text: "Send Code",
                                 upperCase: true,
                                 fullWidth: true,
+                                // text: "Send Code",
+                                // upperCase: true,
+                                // fullWidth: true,
                               ),
                               SizedBox(
                                 height: 10.0,
@@ -214,6 +219,14 @@ class SocialSignInScreen extends StatelessWidget
                                 upperCase: true,
                                 fullWidth: true,
                               ),
+                              defaultButton(
+                                whenPress: () {
+                                  facebookLogin();
+                                },
+                                text: "Continue with Facebook",
+                                upperCase: true,
+                                fullWidth: true,
+                              ),
                               if(false)
                               defaultButton(
                                 whenPress: () {
@@ -255,5 +268,49 @@ class SocialSignInScreen extends StatelessWidget
         },
       ),
     );
+  }
+
+  void facebookLogin() async {
+    final LoginResult result = await FacebookAuth.instance.login(
+      permissions: [],
+    );
+
+    // by default we request the email and the public profile
+
+    // or FacebookAuth.i.login()
+
+    if (result.status == LoginStatus.success) {
+      // you are logged
+      print(result.accessToken.token);
+      print(result.accessToken.userId);
+      print(result.message);
+
+      Dio dio = Dio(
+        BaseOptions(
+          baseUrl: 'https://graph.facebook.com/',
+          receiveDataWhenStatusError: true,
+        ),
+      );
+
+      dio.get('v2.12/me', queryParameters:
+      {
+        'fields': 'name,first_name,last_name,picture',
+        'access_token': result.accessToken.token,
+      }).then((value) {
+        print(value.data);
+
+        dio.get('${result.accessToken.userId}/picture', queryParameters: {
+          'height' : 1024,
+          'width' : 1024,
+        },).then((value)
+        {
+          print(value.data);
+        });
+
+      }).catchError((error)
+      {
+        print(error.toString());
+      });
+    }
   }
 }
