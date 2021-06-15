@@ -168,7 +168,7 @@ class SocialCubit extends Cubit<SocialStates> {
       codeSent: (String verificationId, int resendToken) async {
         emit(CodeSentSuccessState());
         // Update the UI - wait for the user to enter the SMS code
-        String smsCode = "hi dad i am talking to you on firebase";
+        String smsCode = "xxxx";
 
         // Create a PhoneAuthCredential with the code
         PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
