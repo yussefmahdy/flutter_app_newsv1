@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/Social-app-cubits/Social-cubits.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/Social-app-cubits/Social-states.dart';
+import 'package:flutter_app_newsv1/Modules/Social-app/social-phone-auth/social-phone-auth.dart';
 import 'package:flutter_app_newsv1/Modules/Social-app/social-regester/social-regester-screen.dart';
 import 'package:flutter_app_newsv1/Shared/Components/Components.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +48,9 @@ class SocialSignInScreen extends StatelessWidget
           }
         },
         builder: (context, state){
+
           return Scaffold(
+              appBar: AppBar(),
               body: SafeArea(
                   child: Form(
                     key: globalKey,
@@ -99,30 +102,6 @@ class SocialSignInScreen extends StatelessWidget
                                 onChange: (value) {},
                                 obscureText: true,
                               ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              if(state is! CodeSentSuccessState)
-                              defaultFormField(
-                                  controller: phoneController,
-                                  type: TextInputType.phone,
-                                  label: "Phone number",
-                                  validate: "Phone must not be empty",
-                                  icon: Icons.phone,
-                                  onChange: (value) {}
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              if(state is CodeSentSuccessState)
-                              defaultFormField(
-                                  controller: codeController,
-                                  type: TextInputType.number,
-                                  label: "Code",
-                                  validate: "code must not be empty",
-                                  icon: Icons.code,
-                                  onChange: (value) {}
-                              ),
 
                               SizedBox(
                                 height: 20.0,
@@ -146,37 +125,25 @@ class SocialSignInScreen extends StatelessWidget
                                 height: 20.0,
                               ),
                               if(state is! CodeSentSuccessState)
-                              defaultButton(
-                                whenPress: () {
-                                  SocialCubit.get(context).PhoneAuth(
-                                    mobile: phoneController.text,
-                                  );
-                                },
-                                text: "Send Code",
-                                upperCase: true,
-                                fullWidth: true,
-                                // text: "Send Code",
-                                // upperCase: true,
-                                // fullWidth: true,
-                              ),
+
                               SizedBox(
                                 height: 10.0,
                               ),
                               if(state is CodeSentSuccessState)
-                              defaultButton(
-                                whenPress: () {
-                                  SocialCubit.get(context).PhoneAuth(
-                                    code: codeController.text,
-                                  );
-                                },
-                                text: "Continue",
-                                upperCase: true,
-                                fullWidth: true,
-                              ),
-                              if(state is CodeSentSuccessState)
-                              SizedBox(
-                                height: 20.0,
-                              ),
+                              // defaultButton(
+                              //   whenPress: () {
+                              //     SocialCubit.get(context).PhoneAuth(
+                              //       code: codeController.text,
+                              //     );
+                              //   },
+                              //   text: "Continue",
+                              //   upperCase: true,
+                              //   fullWidth: true,
+                              // ),
+                              // if(state is CodeSentSuccessState)
+                              // SizedBox(
+                              //   height: 20.0,
+                              // ),
 
 
                               if(state is! SocialSignInLoadingState)
@@ -227,10 +194,13 @@ class SocialSignInScreen extends StatelessWidget
                                 upperCase: true,
                                 fullWidth: true,
                               ),
-                              if(false)
+
                               defaultButton(
                                 whenPress: () {
-                                  SocialCubit.get(context).PhoneAuth();
+                                  navigateTo(
+                                      context: context,
+                                      widget: SocialphoneAuthScreen(),
+                                  );
                                 },
                                 text: "Continue with Phone number",
                                 upperCase: true,
