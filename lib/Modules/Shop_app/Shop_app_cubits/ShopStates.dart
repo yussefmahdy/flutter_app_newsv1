@@ -67,3 +67,21 @@ class ShopChangeFavoritesLoadingState extends ShopStates {}
 class ShopChangeFavoritesSuccessState extends ShopStates {}
 
 class ShopChangeFavoritesErrorState extends ShopStates {}
+
+class ShopGetFavoritesLoadingState extends ShopStates {}
+
+class ShopGetFavoritesSuccessState extends ShopStates {}
+
+class ShopGetFavoritesErrorState extends ShopStates {}
+
+class ShopChangeCartLoadingState extends ShopStates {}
+
+class ShopChangeCartSuccessState extends ShopStates {}
+
+class ShopChangeCartErrorState extends ShopStates {}
+
+class ShopGetCartLoadingState extends ShopStates {}
+
+class ShopGetCartSuccessState extends ShopStates {}
+
+class ShopGetCartErrorState extends ShopStates {}

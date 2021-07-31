@@ -14,7 +14,7 @@ class FavoritesModel
 
 class Data {
   int currentPage;
-  List<FavoritesData> data;
+  List<FavoritesData> data = [];
   String firstPageUrl;
   int from;
   int lastPage;
@@ -27,13 +27,11 @@ class Data {
   int total;
 
   Data.fromJson(Map<String, dynamic> json) {
+
+    json['cart_items'].forEach((value){
+      data.add(FavoritesData.fromJson(value));
+    });
     currentPage = json['current_page'];
-    if (json['data'] != null) {
-      data = new List<FavoritesData>();
-      json['data'].forEach((v) {
-        data.add(new FavoritesData.fromJson(v));
-      });
-    }
     firstPageUrl = json['first_page_url'];
     from = json['from'];
     lastPage = json['last_page'];
@@ -68,13 +66,16 @@ class Product {
   String description;
 
   Product(
-      {this.id,
+      {
+        this.id,
         this.price,
         this.oldPrice,
         this.discount,
         this.image,
         this.name,
-        this.description});
+        this.description
+      }
+        );
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];

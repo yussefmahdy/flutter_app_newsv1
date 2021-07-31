@@ -9,3 +9,7 @@ const CATEG = "categories";
 const SEARCH = 'products/search';
 
 const FAV = 'favorites';
+
+const CART = 'carts';
+
+const GETCART = 'carts';

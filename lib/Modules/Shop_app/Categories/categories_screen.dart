@@ -12,38 +12,35 @@ class CategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (BuildContext context) => ShopCubit()..getCateg(),
-      child: BlocConsumer<ShopCubit,ShopStates>(
-        listener: (context, state){},
-        builder: (context, state){
-          return Scaffold(
-            body: ConditionalBuilder(
-              condition: ShopCubit.get(context).CategVarData != null,
-              builder: (context) => Column(
-                children: [
+    return BlocConsumer<ShopCubit,ShopStates>(
+      listener: (context, state){},
+      builder: (context, state){
+        return Scaffold(
+          body: ConditionalBuilder(
+            condition: ShopCubit.get(context).CategVarData != null,
+            builder: (context) => Column(
+              children: [
 
-                  SizedBox(
-                    height: 20.0,
+                SizedBox(
+                  height: 20.0,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context,index) => buildHomeItemCateg(context,ShopCubit.get(context).CategVarData.data.categories[index]),
+                    itemCount: ShopCubit.get(context).CategVarData.data.categories.length,
+
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context,index) => buildHomeItemCateg(context,ShopCubit.get(context).CategVarData.data.categories[index]),
-                      itemCount: ShopCubit.get(context).CategVarData.data.categories.length,
-
-                    ),
-                  ) ,
-                ],
-              ), //he cant enter here because it is null
-              fallback: (context) =>  Center(
-                  child: CircularProgressIndicator() // Loader
-              ),
+                ) ,
+              ],
+            ), //he cant enter here because it is null
+            fallback: (context) =>  Center(
+                child: CircularProgressIndicator() // Loader
             ),
+          ),
 
-          );
-        },
+        );
+      },
 
-      ),
     );
   }
 

@@ -15,7 +15,7 @@ class HomeDataSmall{
   List <BannersData> banners = [];
   List <ProductsData> products = [];
   HomeDataSmall.formJson(Map<String ,dynamic> json){
-    print(json);
+    //print(json);
     if (json['banners'] != null) {
       json['banners'].forEach((element) {
         banners.add(BannersData.fromJson(element));
@@ -47,7 +47,7 @@ class ProductsData {
   String name;
   String description;
   bool inFavorite;
-  //bool inCart;
+  bool inCart;
   ProductsData.fromJson(Map<String,dynamic> json ){
     id = json['id'];
     price = json['price'];
@@ -57,7 +57,7 @@ class ProductsData {
     name = json['name'];
     description = json['description'];
     inFavorite = json['in_favorites'];
-    //inCart = json['in_cart'];
+    inCart = json['in_cart'];
 
   }
 

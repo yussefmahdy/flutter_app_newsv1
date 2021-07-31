@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_newsv1/Layout/Home/Home_screen.dart';
+import 'package:flutter_app_newsv1/Modules/Shop_app/Cart/cart-screen.dart';
 import 'package:flutter_app_newsv1/Modules/Shop_app/Categories/categories_screen.dart';
 import 'package:flutter_app_newsv1/Modules/Shop_app/Favorites/favorites_screen.dart';
 import 'package:flutter_app_newsv1/Modules/Shop_app/Settings/HomeSettingScreen.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_app_newsv1/Shared/Networks/local/cache_helper.dart';
 import 'package:flutter_app_newsv1/Shared/Networks/remote/dio_helper.dart';
 import 'package:flutter_app_newsv1/Shared/consts.dart';
 import 'package:flutter_app_newsv1/models/shop_app/Simple_model.dart';
+import 'package:flutter_app_newsv1/models/shop_app/cart_model.dart';
 import 'package:flutter_app_newsv1/models/shop_app/categories_model.dart';
 import 'package:flutter_app_newsv1/models/shop_app/favorites_model.dart';
 import 'package:flutter_app_newsv1/models/shop_app/home_model.dart';
@@ -19,6 +21,7 @@ import 'package:flutter_app_newsv1/models/shop_app/user_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShopCubit extends Cubit<ShopStates> {
   ShopCubit() : super(ShopInitialState());
@@ -37,10 +40,11 @@ class ShopCubit extends Cubit<ShopStates> {
 
 
 
-  List<Widget> screens = [
+  List screens = [
     MainScreen(),
     CategoriesScreen(),
     FavoritesScreen(),
+    CartScreen(),
     HomeSettingsScreen(),
   ];
 
@@ -48,6 +52,7 @@ class ShopCubit extends Cubit<ShopStates> {
     'Salla',
     'Categories',
     'Favorites',
+    'Cart',
     'Settings',
   ];
 
@@ -58,10 +63,15 @@ class ShopCubit extends Cubit<ShopStates> {
 
   HomeData homeData;
 
-  Map<int, bool> favorites = {};
+  Map<int , bool> favorites = {};
+
+  Map<int, bool> cart = {};
 
   void getHome() {
     emit(GetHomeLoadingState());
+
+    print(tokenAll);
+    print("tokenAll");
 
     DioHelper.getData(
         url: HOME,
@@ -71,6 +81,11 @@ class ShopCubit extends Cubit<ShopStates> {
       homeData = HomeData.fromJson(value.data);
 
       homeData.data.products.forEach((element) {
+
+        cart.addAll({
+          element.id:element.inCart,
+        });
+
         favorites.addAll({
           element.id:element.inFavorite,
         });
@@ -79,9 +94,89 @@ class ShopCubit extends Cubit<ShopStates> {
       if(value.data['status']){
         homeData = HomeData.fromJson(value.data);
         // print(homeData.data.products[0].name);
-        print('true');
+        //print('true');
       }
       emit(GetHomeSuccessState());
+    });
+  }
+
+
+
+  CartModel cartModel;
+
+  void getCart() {
+    emit(ShopGetCartLoadingState());
+    print("entered 3");
+
+
+    DioHelper.getData(
+        url: GETCART,
+        token: tokenAll
+    ).then((value) {
+
+
+      cartModel = CartModel.fromJson(value.data);
+
+      print("entered 2");
+
+      // cartModel.data.cartItems.forEach((element) {
+      //   if(!cart.containsKey(element.id)){
+      //     cart.addAll({
+      //
+      //     });
+      //   }
+      // });
+
+
+      emit(ShopGetCartSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(ShopGetCartErrorState(
+        // error.toString()
+      ));
+    });
+  }
+
+
+  void changeCart(int id) {
+    print(id);
+
+    cart[id] = !cart[id];
+    print(cart);
+
+    emit(ShopChangeCartLoadingState());
+    print(tokenAll);
+    print("here you");
+
+    DioHelper.postData(
+        url: CART,
+        token: tokenAll,
+        data: {
+          'product_id' : id,
+        }
+    ).then((value) {
+
+      simpleModel = SimpleModel.fromJson(value.data);
+
+      // print(simpleModel.status);
+      // print(simpleModel.message);
+
+      if(simpleModel.status){
+        print("entered");
+        getCart();
+      }else{
+        cart[id] = !cart[id];
+        //print("Get Favorites Error");
+      }
+
+      emit(ShopChangeCartSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      cart[id] = !cart[id];
+      //print("Get Favorites Error State");
+      emit(ShopChangeCartErrorState(
+        // error.toString()
+      ));
     });
   }
 
@@ -90,7 +185,7 @@ class ShopCubit extends Cubit<ShopStates> {
 
 
   void getFavorites() {
-    emit(GetFavoritesLoadingState());
+     emit(GetFavoritesLoadingState());
 
     DioHelper.getData(
         url: FAV,
@@ -99,13 +194,17 @@ class ShopCubit extends Cubit<ShopStates> {
 
       favoritesModel = FavoritesModel.fromJson(value.data);
 
-      favoritesModel.data.data.forEach((element) {
-        if(!favorites.containsKey(element.id)){
-          favorites.addAll({
+      // favoritesModel.data.data.forEach((element) {
+      //   if(!favorites.containsKey(element.id)){
+      //     favorites.addAll({
+      //
+      //     });
+      //   }
+      // });
 
-          });
-        }
-      });
+      //print("Get favorites success");
+
+
 
 
       // if(value.data['status']){
@@ -115,9 +214,45 @@ class ShopCubit extends Cubit<ShopStates> {
       emit(GetFavoritesSuccessState());
     }).catchError((error) {
       print(error.toString());
+      //print("Get favorites error");
       emit(GetFavoritesErrorState(
         // error.toString()
       ));
+    });
+  }
+
+  void changeFavorites(int id) {
+
+    favorites[id] = !favorites[id];
+
+    emit(ShopChangeFavoritesLoadingState());
+
+    DioHelper.postData(
+        url: FAV,
+        token: tokenAll,
+        data: {
+          'product_id' : id,
+        }
+    ).then((value) {
+
+      simpleModel = SimpleModel.fromJson(value.data);
+
+      // print(simpleModel.status);
+      // print(simpleModel.message);
+
+      //print("Change favorites success");
+
+      if(simpleModel.status){
+        getFavorites();
+      }else{
+        favorites[id] = !favorites[id];
+      }
+
+      emit(ShopChangeFavoritesSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      favorites[id] = !favorites[id];
+      emit(ShopChangeFavoritesErrorState());
     });
   }
 
@@ -133,7 +268,7 @@ class ShopCubit extends Cubit<ShopStates> {
     ).then((value) {
       if(value.data['status']){
         CategVarData = CategData.fromJson(value.data);
-        print('true');
+
       }
       emit(GetCategoriesSuccessState());
     }).catchError((error) {
@@ -166,7 +301,7 @@ class ShopCubit extends Cubit<ShopStates> {
     ).then((value)
     {
 
-      print(value.data);
+      //print(value.data);
       emit(RegisterSuccessState());
     }).catchError((error) {
       print(error.toString());
@@ -228,7 +363,7 @@ class ShopCubit extends Cubit<ShopStates> {
       key: 'isDark',
       value: isDark,
     ).then((value) {
-      print('success');
+      //print('success');
       emit(HomeSettingsChangeThemeModeState());
     });
   }
@@ -321,6 +456,9 @@ class ShopCubit extends Cubit<ShopStates> {
   }) async {
 
     emit(SignInLoadingState());
+    print(LOGIN);
+    print(email);
+    print(password);
 
     DioHelper.postData(
       url: LOGIN,
@@ -329,18 +467,27 @@ class ShopCubit extends Cubit<ShopStates> {
         'password': password,
       },
     ).then((value)
-    {
+    async{
+      print(value.data);
+      print("value");
+      print(value.data["status"]);
       if(value.data['status']){
         userLogin = UserLogin.fromJson(value.data);
         tokenAll = userLogin.data.token;
-        CacheHelper.setData(key: 'token', value: userLogin.data.token).then((value){
-          if(value){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeScreen() ));
-          }
-        });
+        print(value.data);
+        print(userLogin.data);
+        print("login data");
+
+        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+        sharedPreferences.setString("token", userLogin.data.token);
+        // CacheHelper.setData(key: 'token', value: userLogin.data.token).then((value){
+        //   if(value){
+        //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeScreen() ));
+        //   }
+        //});
 
       }else{
-        print('false');
+        //print('false');
       }
       emit(SignInSuccessState());
     }).catchError((error) {
@@ -351,40 +498,11 @@ class ShopCubit extends Cubit<ShopStates> {
 
   SimpleModel simpleModel;
 
-  void changeFavorites(int id) {
 
-    favorites[id] = !favorites[id];
 
-    emit(ShopChangeFavoritesLoadingState());
 
-    DioHelper.postData(
-        url: FAV,
-        token: tokenAll,
-        data: {
-          'product_id' : id,
-        }
-    ).then((value) {
 
-      simpleModel = SimpleModel.fromJson(value.data);
 
-      print(simpleModel.status);
-      print(simpleModel.message);
-
-      if(simpleModel.status){
-        favorites[id] = !favorites[id];
-      }else{
-        getFavorites();
-      }
-
-      emit(ShopChangeFavoritesSuccessState());
-    }).catchError((error) {
-      print(error.toString());
-      favorites[id] = !favorites[id];
-      emit(ShopChangeFavoritesErrorState(
-        // error.toString()
-      ));
-    });
-  }
 
 
 

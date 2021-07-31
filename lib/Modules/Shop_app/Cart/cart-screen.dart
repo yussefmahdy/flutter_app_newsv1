@@ -1,21 +1,25 @@
-import 'package:flutter/material.dart';
 import 'package:conditional_builder/conditional_builder.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_app_newsv1/Modules/Shop_app/Shop_app_cubits/ShopCubit.dart';
 import 'package:flutter_app_newsv1/Modules/Shop_app/Shop_app_cubits/ShopStates.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FavoritesScreen extends StatelessWidget {
+
+class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ShopCubit, ShopStates>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        print("state is");
+        print(state);
+      },
       builder: (context, state)
       {
 
-        var favoritesModel = ShopCubit.get(context).favoritesModel;
+        var cartModel = ShopCubit.get(context).cartModel;
 
         return ConditionalBuilder(
-          condition: favoritesModel != null,
+          condition: cartModel != null,
           builder: (context) => ListView.separated(
             itemBuilder: (context, index) => Padding(
               padding: const EdgeInsets.all(20.0),
@@ -27,7 +31,7 @@ class FavoritesScreen extends StatelessWidget {
                       alignment: AlignmentDirectional.bottomStart,
                       children: [
                         Image(
-                          image: NetworkImage(favoritesModel.data.data[index].product.image),
+                          image: NetworkImage(cartModel.data.cartItems[index].product.image),
                           width: 120.0,
                           height: 120.0,
                         ),
@@ -55,7 +59,7 @@ class FavoritesScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            favoritesModel.data.data[index].product.name,
+                            cartModel.data.cartItems[index].product.name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -67,7 +71,7 @@ class FavoritesScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                favoritesModel.data.data[index].product.price.toString(),
+                                cartModel.data.cartItems[index].product.price.toString(),
                                 style: TextStyle(
                                   fontSize: 12.0,
                                   color: Colors.teal,
@@ -78,7 +82,7 @@ class FavoritesScreen extends StatelessWidget {
                               ),
                               //if (model.discount != 0 && isOldPrice)
                                 Text(
-                                  favoritesModel.data.data[index].product.oldPrice.toString(),
+                                  cartModel.data.cartItems[index].product.oldPrice.toString(),
                                   style: TextStyle(
                                     fontSize: 10.0,
                                     color: Colors.grey,
@@ -87,18 +91,17 @@ class FavoritesScreen extends StatelessWidget {
                                 ),
                               Spacer(),
                               IconButton(
-                                onPressed: ()
-                                {
-                                  ShopCubit.get(context).changeFavorites(favoritesModel.data.data[index].product.id);
+                                onPressed: () {
+                                  ShopCubit.get(context).changeCart(cartModel.data.cartItems[index].product.id);
                                 },
                                 icon: CircleAvatar(
                                   radius: 15.0,
                                   backgroundColor:
-                                  ShopCubit.get(context).favorites[favoritesModel.data.data[index].product.id]
+                                  ShopCubit.get(context).cart[cartModel.data.cartItems[index].product.id]
                                       ? Colors.teal
                                       : Colors.grey,
                                   child: Icon(
-                                    Icons.favorite_border,
+                                    Icons.remove_shopping_cart,
                                     size: 14.0,
                                     color: Colors.white,
                                   ),
@@ -118,20 +121,40 @@ class FavoritesScreen extends StatelessWidget {
               height: 1.0,
               color: Colors.grey[300],
             ),
-            itemCount: 1,
+            itemCount: ShopCubit.get(context).cartModel.data.cartItems.length,
           ),
-          fallback: (context) => Center(child: CircularProgressIndicator()),
+          fallback: (context) => Center(child: Text("Fall Back")),
         );
       },
     );
+    // BlocConsumer<ShopCubit, ShopStates>(
+    //   listener: (context, state) {},
+    //   builder: (context, state)
+    //   {
+    //
+    //     var favoritesModel = ShopCubit.get(context).favoritesModel;
+    //
+    //     return ConditionalBuilder(
+    //       condition: favoritesModel != null,
+    //       builder: (context) => ListView.separated(
+    //         itemBuilder: (context, index) => buildListProduct(ShopCubit.get(context).favoritesModel.data.data[index].product, context),
+    //         separatorBuilder: (context, index) => Container(
+    //           width: double.infinity,
+    //           height: 1.0,
+    //           color: Colors.grey[300],
+    //         ),
+    //         itemCount: ShopCubit.get(context).favoritesModel.data.data.length,
+    //       ),
+    //       fallback: (context) => Center(child: CircularProgressIndicator()),
+    //     );
+    //   },
+    // )
   }
 
 
-  Widget buildListProduct(
-      model,
-      context, {
-        bool isOldPrice = true,
-      }) =>
+  Widget buildListProduct(model, context, {
+    bool isOldPrice = true,
+  }) =>
       Padding(
         padding: const EdgeInsets.all(20.0),
         child: Container(
@@ -202,9 +225,8 @@ class FavoritesScreen extends StatelessWidget {
                           ),
                         Spacer(),
                         IconButton(
-                          onPressed: ()
-                          {
-                            ShopCubit.get(context).changeFavorites(model);
+                          onPressed: () {
+                            ShopCubit.get(context).changeFavorites(model.id);
                           },
                           icon: CircleAvatar(
                             radius: 15.0,
@@ -228,8 +250,7 @@ class FavoritesScreen extends StatelessWidget {
           ),
         ),
       );
-  }
-
+}
 
 
 
